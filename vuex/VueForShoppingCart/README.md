@@ -14,6 +14,8 @@
 <p>3.商品瀏覽頁與收藏頁的優化</p>
 <p>程式部分:整理CSS與各pages的getters.actions的拆解(目前全都放在index中)</p>
 
+<a href="https://youtu.be/Y0ct7HvlYWg">DEMO影片連結</a>
+
 # vue-for-shoppingcart
 
 > A Vue.js project
