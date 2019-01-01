@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">  
+  <title>TodoList</title>
+  <link rel="stylesheet" href="/css/semantic.css">
+  <link rel="stylesheet" href="/css/index.css">
+  <script src="/js/vue.js"></script>
+  <script
+    src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+    crossorigin="anonymous"></script>  
+  <script src="/js/semantic.js"></script>  
+</head>
+<body>  
+  <div id="app" class="inbox">
+    <div class="ui center aligned container">      
+      <span class="ui input focus">
+        <h1>輸入待辦事項</h1>&nbsp;
+        <input type="text" placeholder="type..." v-model="newTodo">&nbsp;
+        <button class="ui linkedin button" @click="insertItem">確定</button>
+      </span>
+    </div>
+    <div class="ui two column grid container">      
+      <div class="column">   
+        <div class="title">待辦事項</div> 
+        <div>
+          <todo-item
+            v-for='todo in Todo' 
+            :key='todo.id'
+            :todo='todo'
+            :del='deleteItem' 
+            :save='saveItem'
+            :checked='todo.done'
+            :doneCheck='doneCheck'            
+          ></todo-item>
+        </div>
+      </div>
+      <div class="column">
+        <div class="title">已完成</div>
+        <div>
+            <todo-item
+            v-for='todo in doneTodo'
+            :key='todo.id'
+            :todo='todo'
+            :del='deleteItem'
+            :save='saveItem'            
+            :doneCheck='doneCheck'
+          ></todo-item>    
+        </div>
+      </div>         
+    </div>
+  </div>
+</body>
+
+<script>
+  //@click.native='deleteItem(todo.id)'
+  Vue.component('todo-item',{
+    
+    props: ['todo','del','save','donecheck'],
+    data :function () {
+      return {
+        editMode: false
+      }
+    },
+    methods: {      
+      toggleModel : function(){
+        this.editMode = !this.editMode;
+      },
+      edit : function(){
+        this.save(this.todo.id);
+        this.editMode = false;
+      }
+    },    
+    template:
+      `
+      <div v-if="!editMode">
+      <p @dblclick='toggleModel'>
+        <input type="checkbox" :checked="todo.done" @change='donecheck(todo.id)'>
+        {{ todo.text }}
+        <button class="ui linkedin button" @click="del(todo.id)">delete</button>
+      </p>
+      </div>
+      <div v-else-if="editMode">
+        <p class="ui input focus">
+          <input type="text" :value="todo.text" id="updateTodo" />&nbsp;
+          <button class="ui linkedin button" @click="edit">edit</button>
+        </p>
+      </div>
+      `
+  })
+
+  let vm = new Vue({
+    el:"#app",
+    data : {
+      newTodo:'',      
+      todoList :[
+        { id: 0, text: '事項1' , done: false},
+        { id: 1, text: '事項2' , done: true},
+        { id: 2, text: '事項3' , done: false}
+      ]
+    },
+    computed:{
+      doneTodo : function(){ return this.todoList.filter(todo => todo.done) } ,
+      Todo :  function(){ return this.todoList.filter(todo => !todo.done) }
+    },
+    methods:{
+      insertItem : function(){
+        let _id = (this.todoList[this.todoList.length - 1].id)+1;
+        let _text = this.newTodo;
+        this.todoList.push({id:_id, text:_text, done: false});
+      },
+      deleteItem : function(index){
+        console.log(index)        
+        for(var i in this.todoList){
+          if(this.todoList[i].id == index) this.todoList.splice(i,1);          
+        }        
+      },
+      saveItem : function(index){
+        console.log(index)  
+        console.log(document.getElementById('updateTodo').value);
+        for(var i in this.todoList){
+          if(this.todoList[i].id == index) this.todoList[i].text = document.getElementById('updateTodo').value;          
+        }
+      },
+      doneCheck : function(index){              
+        for(var i in this.todoList){
+          if(this.todoList[i].id == index){
+            this.todoList[i].done = !this.todoList[i].done;
+            break;
+          }
+        }        
+      }
+    }
+  })
+
+</script>
+
+</html>
